@@ -1,0 +1,1 @@
+add_executable(CHIP-8 main.cpp)
