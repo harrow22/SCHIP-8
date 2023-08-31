@@ -5,16 +5,20 @@
 #include <utility>
 #include "../Memory/Memory.h"
 #include "../Display/Display.h"
+#include "../Keyboard/Keyboard.h"
 #define FONT_MEMORY_LOC 0x50
 #define BYTES_PER_DIGIT 5
-#define DECREASE_RATE 1.0/60.0
 
 class Cpu {
 public:
-    Cpu(Memory& mem, Display& dis) : memory{mem}, sp{&(mem.stack)}, display{dis},
-                                     pc{pc_}, cir{cir_}, i{i_}, reg{reg_},
-                                     dt{dt_}, st{st_} {};
-    void cycle(double deltaT);
+    Cpu(
+            double ips,
+            Memory& mem,
+            Display& dis,
+            Keyboard& kb) : memory{mem}, display{dis}, keyboard{kb}, threshold {static_cast<int>(ips / 60)},
+                            pc{pc_}, cir{cir_}, i{i_}, reg{reg_}, dt{dt_}, st{st_},
+                            sp{&(mem.stack)}, wkp{wkp_} {};
+    void cycle();
     void reset();
 
     const std::uint16_t& pc;
@@ -23,10 +27,12 @@ public:
     const std::array<std::uint8_t, 16>& reg;
     const std::uint8_t& dt;
     const std::uint8_t& st;
+    const bool& wkp;
 private:
     // fetch decode+execute
     void fetch();
     void execute();
+    void updTimers();
     // instructions
     void cls();
     void ret();
@@ -54,7 +60,7 @@ private:
     void skp(std::uint8_t);
     void sknp(std::uint8_t);
     void lddt(std::uint8_t);
-    void ldkp();
+    void ldkp(std::uint8_t);
     void sdt(std::uint8_t);
     void sst(std::uint8_t);
     void saddr(std::uint8_t);
@@ -69,12 +75,15 @@ private:
     std::array<std::uint8_t, 16> reg_ {}; // general-purpose registers
     std::uint8_t dt_ {0}; // delay timer register
     std::uint8_t st_ {0}; // sound timer register
-    double timeElapsed {0};
+    bool wkp_ {false}; // waiting for key flag
+    int threshold;
+    int cycled {0};
     // stack pointer
     std::stack<std::uint16_t>* sp;
     // hardware
     Memory& memory;
     Display& display;
+    Keyboard& keyboard;
 };
 
 

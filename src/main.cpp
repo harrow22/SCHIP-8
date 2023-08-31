@@ -6,9 +6,12 @@
 #include <thread>
 #include <SDL2/SDL.h>
 #include "Core/Cpu.h"
-#include "Memory/Memory.h"
-#include "Display/Display.h"
-#define DEFAULT_IPS 700.0
+#include "memory/Memory.h"
+#include "display/Display.h"
+#include "keyboard/Keyboard.h"
+
+#define FRAME_RATE 60.0
+#define INSTRUCTIONS_PER_SECOND 700.0
 
 int main(int argc, char** argv) {
     if (SDL_Init(SDL_INIT_VIDEO < 0)) {
@@ -19,7 +22,7 @@ int main(int argc, char** argv) {
     // setting up hardware
     Memory memory {};
     Display display {};
-    Cpu cpu {memory, display};
+    Keyboard keyboard {};
 
     // font sprite data
     constexpr std::uint8_t font[] {
@@ -42,7 +45,7 @@ int main(int argc, char** argv) {
     };
 
     // parsing command line input;
-    double ips {DEFAULT_IPS};
+    double ips {INSTRUCTIONS_PER_SECOND};
     if (argc > 1) {
         while (*argv) {
             if (!std::strcmp(*argv, "-rom")) {
@@ -75,8 +78,8 @@ int main(int argc, char** argv) {
                     std::string n {*(++argv)};
                     ips = std::stoi(n);
                 } catch(std::exception& e) {
-                    std::cout << "[Error] when reading input for command line argument '-ips'.\n"
-                              << "Using default value of " << DEFAULT_IPS << " instructions-per-second encountered:"
+                    std::cout << "[Error] when reading input for command line argument '-cycles_per_frame'.\n"
+                              << "Using default value of " << INSTRUCTIONS_PER_SECOND << " instructions-per-second encountered:"
                               << std::endl;
                 }
             }
@@ -92,27 +95,23 @@ int main(int argc, char** argv) {
     }
 
     // main emulator loop
+    Cpu cpu {ips, memory, display, keyboard};
     if (display.on()) {
         SDL_Event e;
         bool quit {false};
-        int frequency {static_cast<int>(1/ips * 1e6)};
-        double dt {std::round((1 / ips * 1e6) / 1e6)};
+        auto cycleLength {std::chrono::duration<double>(1.0 / ips)};
 
+        //std::cout << dt << std::endl;
         //std::string line;
         while (!quit) {
-            //std::cout << "Press any key(s) and enter to step ('q' to quit): ";
-            //std::getline(std::cin, line);
-            //if (line == "q")
-                //quit = true;
+            /* UNCOMMENT FOR DEBUGGING
+            std::cout << "Press any key(s) and enter to step ('q' to quit): ";
+            std::getline(std::cin, line);
+            if (line == "q")
+                quit = true;
+            */
 
-            while (SDL_PollEvent(&e) != 0) {
-                if (e.type == SDL_QUIT) {
-                    quit = true;
-                } else if (e.type == SDL_KEYDOWN) {
-                    
-                }
-            }
-            cpu.cycle(dt);
+            cpu.cycle();
 
             /*
             std::cout << "AFTER STEP:\n";
@@ -121,8 +120,21 @@ int main(int argc, char** argv) {
                       << " IR: " << cpu.i << std::endl;
             for (int i {0}; i != 16; ++i) {
                 std::cout << "REG V[" << i << "]: " << (int) cpu.reg[i] << std::endl;
-            }*/
-            std::this_thread::sleep_for(std::chrono::microseconds(frequency));
+            }
+             */
+
+            std::this_thread::sleep_for(std::chrono::duration_cast<std::chrono::microseconds>(cycleLength));
+            while (SDL_PollEvent(&e) != 0) {
+                if (e.type == SDL_QUIT) {
+                    quit = true;
+                } else if (cpu.wkp) {
+                    if (e.type == SDL_KEYDOWN) {
+                        keyboard.onKeyDown(e.key.keysym.scancode);
+                    } else if (e.type == SDL_KEYUP) {
+                        keyboard.onKeyUp(e.key.keysym.scancode);
+                    }
+                }
+            }
         }
         display.off();
     }

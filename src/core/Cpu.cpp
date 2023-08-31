@@ -1,22 +1,27 @@
 #include "Cpu.h"
 #include <iostream>
-#include <algorithm>
+#include <iomanip>
 #include <experimental/random>
 
-void Cpu::cycle(double deltaT)
+void Cpu::cycle()
 {
     fetch();
     execute();
 
-    if (DECREASE_RATE <= timeElapsed + deltaT) {
-        if (dt_ > 0)
-            --dt_;
-        if (st_ > 0)
-            --st_;
-        timeElapsed = 0;
-    } else {
-        timeElapsed += deltaT;
+    ++cycled;
+    if (cycled == threshold) {
+        updTimers();
+        cycled = 0;
     }
+}
+
+void Cpu::updTimers()
+{
+    if (dt_ > 0)
+        --dt_;
+
+    if (st_ > 0)
+        --st_;
 }
 
 void Cpu::reset()
@@ -141,7 +146,7 @@ void Cpu::execute() {
                     lddt(x);
                     return;
                 case 0x0A:
-                    ldkp();
+                    ldkp(x);
                     return;
                 case 0x15:
                     sdt(x);
@@ -166,7 +171,7 @@ void Cpu::execute() {
                     return;
             }
         default:
-            std::cerr << "[error] undefined opcode" << std::endl;
+            std::cerr << "[error] undefined opcode: " << std::hex << (int) cir << std::endl;
             break;
     }
 }
@@ -324,32 +329,35 @@ inline void Cpu::rnd(std::uint8_t x, std::uint8_t nn)
 // Dxyn: display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
 inline void Cpu::drw(std::uint8_t x, std::uint8_t y, std::uint8_t n)
 {
-    auto xcoord {reg_[x] % SCREEN_WIDTH};
-    auto ycoord {reg_[y] % SCREEN_HEIGHT};
     reg_[0xF] = 0;
+    auto xcoord {reg_[x] & (SCREEN_WIDTH-1)};
+    auto ycoord {reg_[y] & (SCREEN_HEIGHT-1)};
 
     for (std::uint8_t h {0}; h != n && ycoord + h != SCREEN_HEIGHT; ++h) {
         auto byte {memory.read(i_ + h)};
-        for (int right {0}; right != 8 && xcoord + right != SCREEN_WIDTH; ++right) {
+        for (int right {0}; right != 8 &&   xcoord + right != SCREEN_WIDTH; ++right) {
             auto bit {byte << right & 0x80};
-            bool erased = display.setPixel(xcoord + right, ycoord + h, bit);
-            if (!reg_[0xF] && erased)
+            bool collision = display.setPixel(xcoord + right, ycoord + h, bit);
+            if (collision && !reg_[0xF])
                 reg_[0xF] = 1;
         }
     }
+
     display.draw();
 }
 
 // Ex9E: Skip next instruction if key with the value of Vx is pressed.
 inline void Cpu::skp(std::uint8_t x)
 {
-
+    if (keyboard.isPressed(reg_[x]))
+        pc_ += 2;
 }
 
 // ExA1: Skip next instruction if key with the value of Vx is not pressed.
 inline void Cpu::sknp(std::uint8_t x)
 {
-
+    if (!keyboard.isPressed(reg_[x]))
+        pc_ += 2;
 }
 
 // Fx07: Set Vx = delay timer value.
@@ -359,9 +367,17 @@ inline void Cpu::lddt(std::uint8_t x)
 }
 
 // Fx0A: Wait for a key press, store the value of the key in Vx.
-inline void Cpu::ldkp()
+inline void Cpu::ldkp(std::uint8_t x)
 {
-
+    if (!wkp_)
+        wkp_ = true;
+    std::uint8_t key {keyboard.wasPressed()};
+    if (key == NULL_KEY)
+        pc_ -= 2; // loop until key is pressed
+    else {
+        reg_[x] = key;
+        wkp_ = false;
+    }
 }
 
 // Fx15: Set delay timer = Vx.
@@ -412,41 +428,3 @@ inline void Cpu::rd(std::uint8_t x)
     for (int r {0}; r != x + 1; ++r)
         reg_[r] = memory.read(i_ + r);
 }
-
-
-/*
-void timer(std::uint8_t& byte, std::atomic<bool>& alive)
-{
-    alive = true;
-    std::jthread t{[&] {
-        while (byte > 0) {
-            --byte;
-            std::this_thread::sleep_for(std::chrono::microseconds(16667));
-        }
-        alive = false;
-    }};
-}
-
-void cycle(Cpu& chip8)
-{
-    std::atomic<bool> dtAlive {false};
-    std::atomic<bool> stAlive {false};
-
-    while (chip8.running) {
-        if (chip8.dt != 0 && !dtAlive) {
-            timer(chip8.dt, dtAlive);
-        }
-        if (chip8.st != 0 && !stAlive)
-            timer(chip8.st, stAlive);
-
-        chip8.execute(chip8.fetch());
-        std::this_thread::sleep_for(std::chrono::microseconds(chip8.frequency));
-    }
-}
-
-void Cpu::start()
-{
-    running = true;
-    std::jthread t{cycle, std::ref(*this)};
-}
-*/
