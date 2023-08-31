@@ -63,8 +63,8 @@ void Display::draw() {
 
 bool Display::setPixel(std::uint8_t x, std::uint8_t y, std::uint8_t bit)
 {
-    auto temp {pixels_[(x + y * SCREEN_WIDTH) % (SCREEN_WIDTH * SCREEN_HEIGHT)]};
-    pixels_[(x + y * SCREEN_WIDTH) % (SCREEN_WIDTH * SCREEN_HEIGHT)] ^= bit;
+    auto temp {pixels_[(x + y * SCREEN_WIDTH)]};
+    pixels_[(x + y * SCREEN_WIDTH)] ^= bit;
     return temp == 128 && bit == 128;
 }
 

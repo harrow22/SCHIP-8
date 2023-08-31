@@ -20,8 +20,10 @@ void Cpu::updTimers()
     if (dt_ > 0)
         --dt_;
 
-    if (st_ > 0)
+    if (st_ > 0) {
+        // TODO: implement sound? (probably never)
         --st_;
+    }
 }
 
 void Cpu::reset()

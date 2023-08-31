@@ -11,7 +11,7 @@
 #include "keyboard/Keyboard.h"
 
 #define FRAME_RATE 60.0
-#define INSTRUCTIONS_PER_SECOND 700.0
+#define INSTRUCTIONS_PER_SECOND 8000.0
 
 int main(int argc, char** argv) {
     if (SDL_Init(SDL_INIT_VIDEO < 0)) {

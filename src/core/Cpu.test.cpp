@@ -11,7 +11,8 @@ protected:
 
     Memory memory {};
     Display display {};
-    Cpu cpu {memory, display};
+    Keyboard keyboard {};
+    Cpu cpu {700.0, memory, display, keyboard};
 };
 
 TEST_F(CpuTest, initialStateIsValid)

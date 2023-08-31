@@ -1517,3 +1517,11 @@
 /cmake-build-release/_deps/sdl2-subbuild/CMakeLists.txt
 /cmake-build-release/tests/cmake_install.cmake
 /cmake-build-release/tests/CTestTestfile.cmake
+/cmake-build-debug/src/CMakeFiles/CHIP-8.dir/keyboard/Keyboard.cpp.obj
+/cmake-build-release/.cmake/api/v1/reply/codemodel-v2-176d73b1bc2675afe44d.json
+/cmake-build-release/.cmake/api/v1/reply/index-2023-08-31T01-54-48-0838.json
+/cmake-build-release/.cmake/api/v1/reply/target-Test-CHIP-8-Release-ddcab16b67068edb04e9.json
+/cmake-build-debug/.cmake/api/v1/reply/codemodel-v2-2b71ed67a315f2eb74ee.json
+/cmake-build-debug/.cmake/api/v1/reply/index-2023-08-31T01-54-48-0835.json
+/cmake-build-debug/.cmake/api/v1/reply/target-Test-CHIP-8-Debug-1379db290b0fe819a9d0.json
+/cmake-build-debug/tests/CMakeFiles/Test-CHIP-8.dir/__/src/keyboard/Keyboard.cpp.obj

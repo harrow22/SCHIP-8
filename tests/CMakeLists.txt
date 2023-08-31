@@ -11,6 +11,7 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 add_executable(Test-CHIP-8 main.cpp
+        ../src/keyboard/Keyboard.cpp
         ../src/memory/Memory.cpp
         ../src/memory/Memory.test.cpp
         ../src/display/Display.cpp
