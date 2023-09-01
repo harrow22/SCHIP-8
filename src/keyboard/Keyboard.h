@@ -12,6 +12,7 @@ public:
     std::uint8_t wasPressed();
     void onKeyDown(SDL_Scancode&);
     void onKeyUp(SDL_Scancode&);
+    void reset();
 private:
     static constexpr std::array<SDL_Scancode, 16> keyMap {
         SDL_SCANCODE_X, // 0

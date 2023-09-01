@@ -5,14 +5,16 @@ bool Keyboard::isPressed(std::uint8_t key) {
     return SDL_GetKeyboardState(nullptr)[keyMap[key]];
 }
 
+void Keyboard::reset()
+{
+    released = NULL_KEY;
+    keysDown.clear();
+}
+
 std::uint8_t Keyboard::wasPressed() {
     if (released != NULL_KEY) {
         auto temp {released};
-        released = NULL_KEY;
-        keysDown.clear();
-
-        for (auto code : keysDown)
-            std::cout << code.first << code.second << std::endl;
+        reset();
         return temp;
     }
     return NULL_KEY;
@@ -33,8 +35,6 @@ void Keyboard::onKeyDown(SDL_Scancode& scancode)
 
 void Keyboard::onKeyUp(SDL_Scancode& scancode)
 {
-
-
     auto key {keysDown.find(scancode)};
     if (key != keysDown.end())
         released = key->second;

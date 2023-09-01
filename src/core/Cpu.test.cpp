@@ -12,7 +12,7 @@ protected:
     Memory memory {};
     Display display {};
     Keyboard keyboard {};
-    Cpu cpu {700.0, memory, display, keyboard};
+    Cpu cpu {memory, display, keyboard};
 };
 
 TEST_F(CpuTest, initialStateIsValid)
@@ -22,23 +22,8 @@ TEST_F(CpuTest, initialStateIsValid)
     EXPECT_EQ(cpu.i, 0);
     for (int i = 0; i != 16; ++i)
         EXPECT_EQ(cpu.reg[i], 0);
-    EXPECT_EQ(cpu.st, 0);
-    EXPECT_EQ(cpu.dt, 0);
-}
-
-TEST_F(CpuTest, resetWorks)
-{
-    setRegisterInstr(0x60, 0x12);
-    cpu.cycle();
-    cpu.reset();
-
-    EXPECT_EQ(cpu.pc, 0x200); // CHIP-8 programs start at memory addr 0x200
-    EXPECT_EQ(cpu.cir, 0);
-    EXPECT_EQ(cpu.i, 0);
-    for (int i = 0; i != 16; ++i)
-        EXPECT_EQ(cpu.reg[i], 0);
-    EXPECT_EQ(cpu.st, 0);
-    EXPECT_EQ(cpu.dt, 0);
+    EXPECT_EQ(cpu.sound, 0);
+    EXPECT_EQ(cpu.delay, 0);
 }
 
 TEST_F(CpuTest, instructionCallAndRet)
@@ -416,7 +401,7 @@ TEST_F(CpuTest, instructionFx07)
 
     EXPECT_EQ(cpu.reg[0], 0xCC);
     EXPECT_EQ(cpu.reg[1], 0xCC);
-    EXPECT_EQ(cpu.dt, 0xCC);
+    EXPECT_EQ(cpu.delay, 0xCC);
     EXPECT_EQ(cpu.cir, 0xF107);
 }
 
@@ -429,7 +414,7 @@ TEST_F(CpuTest, instructionFx15)
     cpu.cycle();
 
     EXPECT_EQ(cpu.reg[0], 0xCC);
-    EXPECT_EQ(cpu.dt, 0xCC);
+    EXPECT_EQ(cpu.delay, 0xCC);
     EXPECT_EQ(cpu.cir, 0xF015);
 }
 
@@ -442,7 +427,7 @@ TEST_F(CpuTest, instructionFx18)
     cpu.cycle();
 
     EXPECT_EQ(cpu.reg[0], 0xCC);
-    EXPECT_EQ(cpu.st, 0xCC);
+    EXPECT_EQ(cpu.sound, 0xCC);
     EXPECT_EQ(cpu.cir, 0xF018);
 }
 

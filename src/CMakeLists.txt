@@ -15,7 +15,6 @@ add_executable(CHIP-8 main.cpp
         display/Display.h
         keyboard/Keyboard.cpp
         keyboard/Keyboard.h
-
 )
 set(CMAKE_EXE_LINKER_FLAGS "-static")
 target_link_libraries(CHIP-8

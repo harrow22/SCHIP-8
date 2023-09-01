@@ -3,30 +3,39 @@
 
 #include <bitset>
 #include <vector>
-#include <array>
 #include <cstdint>
 #include "SDL2/SDL.h"
 #define SCALE_FACTOR 10
+#define HI_RESOLUTION_SCALE 2
 #define SCREEN_WIDTH 64
 #define SCREEN_HEIGHT 32
 #define HEX_COLOR_ON 0x9C5ECCFF
 #define HEX_COLOR_OFF 0x18141CFF
 
-using PixelGrid = std::array<std::uint8_t, SCREEN_WIDTH * SCREEN_HEIGHT>;
 class Display {
 public:
-    Display() : pixels{pixels_} {};
+    Display() : buffer{buffer_}, width{width_}, height{height_} {};
     bool on();
     void off();
     void draw();
-    bool setPixel(std::uint8_t, std::uint8_t, std::uint8_t);
+    void setres(int);
+    void scrollDown(std::uint8_t);
+    void scrollRight();
+    void scrollLeft();
+    bool flipPixel(std::uint8_t, std::uint8_t);
     void clear();
-    const PixelGrid& pixels;
+    [[nodiscard]] bool isHighRes() const { return scale == HI_RESOLUTION_SCALE; }
+    const std::vector<std::uint8_t>& buffer;
+    const int& width;
+    const int& height;
 private:
     SDL_Window* window {nullptr};
     SDL_Renderer* renderer {nullptr};
     SDL_Texture* texture {nullptr};
-    PixelGrid pixels_ {};
+    std::vector<std::uint8_t> buffer_ {std::vector<std::uint8_t>(SCREEN_WIDTH * SCREEN_HEIGHT)};
+    int scale {1};
+    int width_ {SCREEN_WIDTH};
+    int height_ {SCREEN_HEIGHT};
 };
 
 
