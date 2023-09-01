@@ -10,15 +10,10 @@
 #include "display/Display.h"
 #include "keyboard/Keyboard.h"
 
-#define CYCLES_PER_FRAME 10.0
+#define CYCLES_PER_FRAME 20.0
 #define FRAME_RATE 60.0
 
 int main(int argc, char** argv) {
-    if (SDL_Init(SDL_INIT_VIDEO < 0)) {
-        std::cerr << "[Error] SDL failed to initialize." << std::endl;
-        exit(0);
-    }
-
     // setting up hardware
     Memory memory {};
     Display display {};
@@ -28,6 +23,7 @@ int main(int argc, char** argv) {
     // settings
     double cyclesPerFrame {CYCLES_PER_FRAME};
     bool debugging {false};
+    bool romLoaded {false};
 
     // font sprite data
     constexpr std::uint8_t font[] {
@@ -92,20 +88,21 @@ int main(int argc, char** argv) {
                     }
                     // close the file
                     rom.close();
+                    romLoaded = true;
                 } catch(std::exception& e) {
-                    std::cout << "[Error] Failed to open rom (" << e.what() << ")."
+                    std::cerr << "[Error] Failed to open rom (" << e.what() << ")."
                               << "\nEnding CHIP-8 program..."
                               << std::endl;
                     exit(0);
                 }
-            } else if (!std::strcmp(*argv, "-ips")) {
+            } else if (!std::strcmp(*argv, "-cycles_per_frame")) {
                 try {
                     std::string n {*(++argv)};
                     cyclesPerFrame = std::stoi(n);
                 } catch(std::exception& e) {
-                    std::cout << "[Error] Could not read input for command line argument '-cycles_per_frame'."
-                              << "\n\tUsing default value of " << cyclesPerFrame << " CYCLES/FRAME."
+                    std::cerr << "[Crash] Uh oh! Could not read input for command line argument '-cycles_per_frame'."
                               << std::endl;
+                    exit(0);
                 }
             } else if (!std::strcmp(*argv, "-superchip")) {
                 cpu.superChip();
@@ -124,13 +121,28 @@ int main(int argc, char** argv) {
                 std::cout << "*NOTE: -quirk and -superchip will override each other, precedence matters!*" <<std::endl;
             } else if (!std::strcmp(*argv, "-debug")) {
                 debugging = true;
-            } else {
-                std::cout << "[Error] Unrecognized command line argument: " << *argv
-                          << "\n\tAvailable arguments are: -rom -cycles_per_frame -superchip -quirk"
+            } else if (!std::strcmp(*argv, "-help")) {
+                std::cout << "Available arguments are:"
+                          << "\n\t-rom <path/to/rom>\n\t-cycles_per_frame <number>"
+                          << "\n\t-superchip\n\t-quirk <quirk_name=bool>\n\t-help"
                           << std::endl;
+            } else {
+                std::cerr << "[Error] Unrecognized command line argument: " << *argv << "use '-help' to see a list of "
+                          << "supported arguments." << std::endl;
             }
             ++argv;
         }
+    }
+
+    if (!romLoaded)
+    {
+        std::cerr << "[Error] No rom specified." << std::endl;
+        exit(0);
+    }
+
+    if (SDL_Init(SDL_INIT_VIDEO < 0)) {
+        std::cerr << "[Error] SDL failed to initialize." << std::endl;
+        exit(0);
     }
 
     // writing the font into memory
@@ -142,7 +154,6 @@ int main(int argc, char** argv) {
     addr = BIG_FONT_MEMORY_LOC;
     for (auto byte : schipfont)
         memory.write(byte, addr++);
-
 
     // main emulator loop
     if (display.on()) {

@@ -10,7 +10,6 @@
 class Memory {
 public:
     Memory() = default;
-    void wipe();
     void write(std::uint8_t byte, std::uint16_t addr) { arr.at(addr) = byte; };
     [[nodiscard]] std::uint8_t read(std::uint16_t addr) const { return arr.at(addr); };
     std::stack<std::uint16_t> stack;

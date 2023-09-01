@@ -8,9 +8,9 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-enable_testing()
+include(GoogleTest)
 
-add_executable(Test-CHIP-8 main.cpp
+add_executable(Test-SCHIP-8 main.cpp
         ../src/keyboard/Keyboard.cpp
         ../src/memory/Memory.cpp
         ../src/memory/Memory.test.cpp
@@ -19,7 +19,10 @@ add_executable(Test-CHIP-8 main.cpp
         ../src/core/Cpu.test.cpp
 )
 set(CMAKE_EXE_LINKER_FLAGS "-static")
-target_link_libraries(Test-CHIP-8
+target_link_libraries(Test-SCHIP-8
         PRIVATE SDL2main
         PRIVATE SDL2-static
         PRIVATE GTest::gtest_main)
+
+enable_testing()
+gtest_discover_tests(Test-SCHIP-8)

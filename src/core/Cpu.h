@@ -2,13 +2,12 @@
 #define CHIP_8_CPU_H
 
 #include <cstdint>
-#include <utility>
 #include "../memory/Memory.h"
 #include "../display/Display.h"
 #include "../keyboard/Keyboard.h"
 #define FONT_MEMORY_LOC 0x50
-#define BIG_FONT_MEMORY_LOC (FONT_MEMORY_LOC + 80)
 #define BYTES_PER_DIGIT 5
+#define BIG_FONT_MEMORY_LOC (FONT_MEMORY_LOC + 80)
 #define BIG_BYTES_PER_DIGIT 10
 
 class Cpu {

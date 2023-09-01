@@ -474,7 +474,7 @@ TEST_F(CpuTest, instructionFx55Single)
     setRegisterInstr(0xF0, 0x55);
     cpu.cycle();
 
-    EXPECT_EQ(memory.read(cpu.i), 0xEE);
+    EXPECT_EQ(memory.read(cpu.i - 1), 0xEE); // testing done for chip8 increment i quirk = true
     EXPECT_EQ(cpu.cir, 0xF055);
 }
 
@@ -489,8 +489,8 @@ TEST_F(CpuTest, instructionFx55Multi)
     setRegisterInstr(0xF1, 0x55);
     cpu.cycle();
 
-    EXPECT_EQ(memory.read(cpu.i), 0xEE);
-    EXPECT_EQ(memory.read(cpu.i + 1), 0xFF);
+    EXPECT_EQ(memory.read(cpu.i - 2), 0xEE);
+    EXPECT_EQ(memory.read(cpu.i - 1), 0xFF);
     EXPECT_EQ(cpu.cir, 0xF155);
 }
 

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.26)
-project(CHIP-8
+project(SCHIP-8
         VERSION 0.0
         DESCRIPTION "A CHIP-8 interpreter built in C++"
         LANGUAGES CXX C

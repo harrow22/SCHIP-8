@@ -10,7 +10,7 @@ bool onError()
 
 bool Display::on() {
     window = SDL_CreateWindow(
-            "CHIP-8 Emulator",
+            "SCHIP-8",
             SDL_WINDOWPOS_CENTERED,
             SDL_WINDOWPOS_CENTERED,
             SCREEN_WIDTH * SCALE_FACTOR,

@@ -1,5 +1,4 @@
 #include "Keyboard.h"
-#include <iostream>
 
 bool Keyboard::isPressed(std::uint8_t key) {
     return SDL_GetKeyboardState(nullptr)[keyMap[key]];

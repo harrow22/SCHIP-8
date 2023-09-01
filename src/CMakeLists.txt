@@ -6,7 +6,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SDL2)
 
-add_executable(CHIP-8 main.cpp
+add_executable(SCHIP-8 main.cpp
         core/Cpu.cpp
         core/Cpu.h
         memory/Memory.cpp
@@ -17,6 +17,6 @@ add_executable(CHIP-8 main.cpp
         keyboard/Keyboard.h
 )
 set(CMAKE_EXE_LINKER_FLAGS "-static")
-target_link_libraries(CHIP-8
+target_link_libraries(SCHIP-8
         PRIVATE SDL2main
         PRIVATE SDL2-static)

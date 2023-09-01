@@ -14,20 +14,19 @@
 
 class Display {
 public:
-    Display() : buffer{buffer_}, width{width_}, height{height_} {};
     bool on();
     void off();
+    void clear();
     void draw();
+    bool flipPixel(std::uint8_t, std::uint8_t);
     void setres(int);
     void scrollDown(std::uint8_t);
     void scrollRight();
     void scrollLeft();
-    bool flipPixel(std::uint8_t, std::uint8_t);
-    void clear();
     [[nodiscard]] bool isHighRes() const { return scale == HI_RESOLUTION_SCALE; }
-    const std::vector<std::uint8_t>& buffer;
-    const int& width;
-    const int& height;
+    const std::vector<std::uint8_t>& buffer {buffer_};
+    const int& width {width_};
+    const int& height {height_};
 private:
     SDL_Window* window {nullptr};
     SDL_Renderer* renderer {nullptr};
