@@ -1,0 +1,10 @@
+.idea
+.idea/*
+
+cmake-build-debug
+cmake-build-debug/*
+cmake-build-release
+cmake-build-release/*
+
+assets/tests
+assets/tests/*

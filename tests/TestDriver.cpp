@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
-#include <SDL2/SDL.h>
+#include "SDL.h"
 
 int main(int argc, char **argv)
 {
-    if (SDL_Init(SDL_INIT_VIDEO < 0)) {
-        std::cout << "[ERROR] SDL failed to initialize" << std::endl;
-        std::terminate();
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        SDL_Log("SDL_Init() failed. SDL_Error: %s\n", SDL_GetError());
+        return 0;
     }
 
     ::testing::InitGoogleTest(&argc, argv);

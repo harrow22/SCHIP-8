@@ -1,16 +1,9 @@
 #ifndef CHIP_8_DISPLAY_H
 #define CHIP_8_DISPLAY_H
 
-#include <bitset>
 #include <vector>
 #include <cstdint>
-#include "SDL2/SDL.h"
-#define SCALE_FACTOR 10
-#define HI_RESOLUTION_SCALE 2
-#define SCREEN_WIDTH 64
-#define SCREEN_HEIGHT 32
-#define HEX_COLOR_ON 0x9C5ECCFF
-#define HEX_COLOR_OFF 0x18141CFF
+#include "SDL.h"
 
 class Display {
 public:
@@ -19,22 +12,27 @@ public:
     void clear();
     void draw();
     bool flipPixel(std::uint8_t, std::uint8_t);
-    void setres(int);
+    void setResolution(int);
     void scrollDown(std::uint8_t);
     void scrollRight();
     void scrollLeft();
-    [[nodiscard]] bool isHighRes() const { return scale == HI_RESOLUTION_SCALE; }
-    const std::vector<std::uint8_t>& buffer {buffer_};
+
     const int& width {width_};
     const int& height {height_};
 private:
-    SDL_Window* window {nullptr};
-    SDL_Renderer* renderer {nullptr};
-    SDL_Texture* texture {nullptr};
-    std::vector<std::uint8_t> buffer_ {std::vector<std::uint8_t>(SCREEN_WIDTH * SCREEN_HEIGHT)};
-    int scale {1};
-    int width_ {SCREEN_WIDTH};
-    int height_ {SCREEN_HEIGHT};
+    static constexpr int screenWidth_ {64};
+    static constexpr int screenHeight_ {32};
+    static constexpr long long colorOn_ {0x9C5ECCFF};
+    static constexpr long long colorOff_ {0x18141CFF};
+    static constexpr int scaleFactor_ {10};
+
+    SDL_Window* window_ {nullptr};
+    SDL_Renderer* renderer_ {nullptr};
+    SDL_Texture* texture_ {nullptr};
+    std::vector<std::uint8_t> buffer_ {std::vector<std::uint8_t>(screenWidth_ * screenHeight_)};
+    int currScale_ {1};
+    int width_ {screenWidth_};
+    int height_ {screenHeight_};
 };
 
 

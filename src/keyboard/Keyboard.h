@@ -1,13 +1,15 @@
 #ifndef CHIP_8_KEYBOARD_H
 #define CHIP_8_KEYBOARD_H
-#include <SDL2/SDL.h>
+
+#include "SDL.h"
 #include <cstdint>
-#include <unordered_map>
 #include <array>
-#define NULL_KEY 255
+#include <unordered_map>
 
 class Keyboard {
 public:
+    static constexpr int nullKey {255};
+
     static bool isPressed(std::uint8_t) ;
     std::uint8_t wasPressed();
     void onKeyDown(SDL_Scancode&);
@@ -33,7 +35,7 @@ private:
         SDL_SCANCODE_V, // 15
     };
     std::unordered_map<SDL_Scancode, std::uint8_t> keysDown;
-    std::uint8_t released {NULL_KEY};
+    std::uint8_t released {nullKey};
 };
 
 

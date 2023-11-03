@@ -10,19 +10,26 @@ FetchContent_MakeAvailable(googletest)
 
 include(GoogleTest)
 
-add_executable(Test-SCHIP-8 main.cpp
+add_executable(${PROJECT_NAME}_test TestDriver.cpp
         ../src/keyboard/Keyboard.cpp
         ../src/memory/Memory.cpp
         ../src/memory/Memory.test.cpp
         ../src/display/Display.cpp
-        ../src/core/Cpu.cpp
-        ../src/core/Cpu.test.cpp
+        ../src/interpreter/Interpreter.cpp
+        ../src/interpreter/Interpreter.test.cpp
 )
-set(CMAKE_EXE_LINKER_FLAGS "-static")
-target_link_libraries(Test-SCHIP-8
-        PRIVATE SDL2main
-        PRIVATE SDL2-static
+
+target_link_libraries(${PROJECT_NAME}_test
+        PRIVATE ${SDL2_LIBRARIES}
         PRIVATE GTest::gtest_main)
+target_include_directories(${PROJECT_NAME}_test
+        PRIVATE ${SDL2_INCLUDE_DIR})
+
+if (NOT SDL2_FETCHED)
+    add_custom_command(TARGET ${PROJECT_NAME}_test POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/lib $<TARGET_FILE_DIR:${PROJECT_NAME}_test>)
+endif()
 
 enable_testing()
-gtest_discover_tests(Test-SCHIP-8)
+gtest_discover_tests(${PROJECT_NAME}_test)

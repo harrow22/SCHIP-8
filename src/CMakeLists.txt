@@ -1,22 +1,19 @@
-include(FetchContent)
-FetchContent_Declare(
-        SDL2
-        GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-        GIT_TAG        release-2.28.2
-)
-FetchContent_MakeAvailable(SDL2)
-
-add_executable(SCHIP-8 main.cpp
-        core/Cpu.cpp
-        core/Cpu.h
+add_executable(${PROJECT_NAME} Emulator.cpp
+        interpreter/Interpreter.cpp
+        interpreter/Interpreter.h
         memory/Memory.cpp
         memory/Memory.h
         display/Display.cpp
         display/Display.h
         keyboard/Keyboard.cpp
-        keyboard/Keyboard.h
-)
-set(CMAKE_EXE_LINKER_FLAGS "-static")
-target_link_libraries(SCHIP-8
-        PRIVATE SDL2main
-        PRIVATE SDL2-static)
+        keyboard/Keyboard.h)
+target_link_libraries(${PROJECT_NAME}
+        PRIVATE ${SDL2_LIBRARIES})
+target_include_directories(${PROJECT_NAME}
+        PRIVATE ${SDL2_INCLUDE_DIR})
+
+if (NOT SDL2_FETCHED)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/lib $<TARGET_FILE_DIR:${PROJECT_NAME}>)
+endif()
