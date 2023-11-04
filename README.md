@@ -76,7 +76,7 @@ ctest
 
 For a more detailed report, the test logs are written to `tests/Testing/Temporary/` or you can use the command,
 ```
-$ cat Testing/Temporary/LastTestLog.txt
+cat Testing/Temporary/LastTestLog.txt
 ```
 
 ## Thanks
