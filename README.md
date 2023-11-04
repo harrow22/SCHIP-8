@@ -1,6 +1,6 @@
 # CHIP-8/SUPER-CHIP Emulator
 <p align="center">
-  <img alt="Spacefight 2091 demo gif" src="/assets/demo.gif" />
+  <img alt="Spacefight 2091 demo gif" src="https://raw.githubusercontent.com/harrow22/SCHIP-8/master/assets/demo.gif" />
 </p>
 
 Another CHIP-8 and SUPER-CHIP emulator written in C++. Sound not implemented.
