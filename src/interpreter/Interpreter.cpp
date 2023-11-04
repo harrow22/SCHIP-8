@@ -6,11 +6,11 @@
 
 bool Interpreter::setMode(const std::string& mode) {
     if (mode == "superchip") {
-        quirk_ = {true, true, false, false, quirk_[overflow]};;
+        quirk_ = {false, false, true, true, quirk_[ioverflow]};;
     } else if (mode == "xochip") {
-        quirk_ = {true, true, false, false, quirk_[overflow]};;
+        quirk_ = {false, true, false, false, quirk_[ioverflow]};;
     } else if (mode == "default") {
-        quirk_ = {true, true, false, false, quirk_[overflow]};
+        quirk_ = {true, true, false, false, quirk_[ioverflow]};
     } else {
         return false;
     }
@@ -30,8 +30,8 @@ bool Interpreter::setQuirk(const std::string& quirk) {
         quirk_[inplace] = enabled == "true";
     else if (name == "jumping")
         quirk_[jumpx] = enabled == "true";
-    else if (name == "overflow")
-        quirk_[overflow] = enabled == "true";
+    else if (name == "ioverflow")
+        quirk_[ioverflow] = enabled == "true";
     else
         return false;
 
@@ -346,7 +346,7 @@ inline void Interpreter::wkp_()
 // Fx1E: Set I = I + Vx.
 inline void Interpreter::addi_(std::uint8_t x)
 {
-    if (quirk_[overflow] and i + v_[x] > 999)
+    if (quirk_[ioverflow] and i + v_[x] > 999)
         v_[0xF] = 0;
     i_ += v_[x];
 }

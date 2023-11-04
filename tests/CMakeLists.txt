@@ -25,11 +25,9 @@ target_link_libraries(${PROJECT_NAME}_test
 target_include_directories(${PROJECT_NAME}_test
         PRIVATE ${SDL2_INCLUDE_DIR})
 
-if (NOT SDL2_FETCHED)
-    add_custom_command(TARGET ${PROJECT_NAME}_test POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_SOURCE_DIR}/lib $<TARGET_FILE_DIR:${PROJECT_NAME}_test>)
-endif()
+add_custom_command(TARGET ${PROJECT_NAME}_test POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/lib $<TARGET_FILE_DIR:${PROJECT_NAME}_test>)
 
 enable_testing()
 gtest_discover_tests(${PROJECT_NAME}_test)

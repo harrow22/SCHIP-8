@@ -28,7 +28,7 @@ private:
     static constexpr int incr {1};
     static constexpr int inplace {2};
     static constexpr int jumpx {3};
-    static constexpr int overflow {4};
+    static constexpr int ioverflow {4};
 
     void fetch_();
     void execute_();

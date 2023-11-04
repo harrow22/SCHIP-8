@@ -16,7 +16,10 @@ bool startup(Display& display, bool romLoaded)
         return false;
     }
 
-
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        std::cerr << std::format("SDL_Error: {:s}\n", SDL_GetError());
+        return false;
+    }
 
     if (!display.on()) {
         std::cout << "Exiting...\n";
@@ -36,7 +39,7 @@ int main(int argc, char** argv) {
     Interpreter interpreter {memory, display, keyboard};
 
     // settings
-    double speed {700};
+    double cycles_per_frame {20};
     bool debugging {false};
     bool romLoaded {false};
     std::string mode;
@@ -47,17 +50,17 @@ int main(int argc, char** argv) {
         bool hasNext {i + 1 != argc};
         if (argv[i] == "-rom"sv and hasNext) {
             romLoaded = memory.load(argv[++i]);
-        } else if (argv[i] == "-mode"sv and hasNext) {
+        } else if (argv[i] == "--mode"sv and hasNext) {
             mode = argv[++i];
         } else if (argv[i] == "-quirk"sv and hasNext) {
             if (!interpreter.setQuirk(argv[++i]))
                 std::cerr << std::format("error: failed to read interpreter '-quirk {:s}' option.\n", argv[i]);
-        } else if (argv[i] == "-speed"sv and hasNext) {
+        } else if (argv[i] == "-cycles_per_frame"sv and hasNext) {
             try {
                 std::string n {argv[++i]};
-                speed = std::stoi(n);
+                cycles_per_frame = std::stoi(n);
             } catch (std::exception& e) {
-                std::cerr << std::format("error: failed to read integer for '-speed' option, using default={:f}.\n", speed);
+                std::cerr << std::format("error: failed to read integer for '-cycles_per_frame' option, using default={:f}.\n", cycles_per_frame);
             }
         } else if (argv[i] == "-debug"sv) {
             debugging = true;
@@ -79,7 +82,7 @@ int main(int argc, char** argv) {
         SDL_Event e;
         bool quit {false};
 
-        int frameLength {static_cast<int>((1 / 60) * 1e3)};
+        int frameLength {static_cast<int>(1.0 / 60.0 * 1e3)};
         unsigned long long tick {0};
 
         // TO ENTER/EXIT DEBUG MODE PRESS 'I' (QWERTY)
@@ -99,7 +102,7 @@ int main(int argc, char** argv) {
                 }
             }
 
-            for (int cycles {0}; cycles < speed / 60 and !quit; ++cycles) {
+            for (int cycles {0}; cycles != cycles_per_frame and !quit; ++cycles) {
                 interpreter.cycle();
                 ++tick;
 
