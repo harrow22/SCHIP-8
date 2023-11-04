@@ -1,6 +1,5 @@
 #include <string>
 #include <string_view>
-#include <thread>
 #include <iostream>
 #include <format>
 #include "SDL.h"
@@ -74,7 +73,6 @@ int main(int argc, char** argv) {
             std::cout << std::format("Running emulator in '{:s}' mode!\n", mode);
         else
             std::cerr << "error: failed to read interpreter '-mode' option, using default=chip8.\n";
-
     }
 
     // main emulator loop

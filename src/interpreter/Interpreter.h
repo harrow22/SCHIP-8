@@ -45,8 +45,7 @@ private:
     void ret_();
     void jp_();
     void call_();
-    void se_(std::uint8_t, std::uint8_t);
-    void sne_(std::uint8_t, std::uint8_t);
+    void skip_(bool);
     static void ld_(std::uint8_t&, std::uint8_t);
     void add_();
     void or_();
@@ -61,8 +60,6 @@ private:
     void jpo_();
     void rnd_();
     void drw_();
-    void skp_();
-    void sknp_();
     void wkp_();
     void addi_(std::uint8_t);
     void bcd_();

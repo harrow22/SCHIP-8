@@ -91,9 +91,9 @@ void Interpreter::execute_() {
             }
         case 1: return jp_();
         case 2: return call_();
-        case 3: return se_(v_[x_()], nn_());
-        case 4: return sne_(v_[x_()], nn_());
-        case 5: return se_(v_[x_()], v_[y_()]);
+        case 3: return skip_(v_[x_()] == nn_());
+        case 4: return skip_(v_[x_()] != nn_());
+        case 5: return skip_(v_[x_()] == v_[y_()]);
         case 6: return ld_(v_[x_()], nn_());
         case 7: return add_();
         case 8:
@@ -109,15 +109,15 @@ void Interpreter::execute_() {
                 case 0xE: return shl_(x_(), y_());
                 default: return undefined(cir_);
             }
-        case 9: return sne_(v_[x_()], v_[y_()]);
+        case 9: return skip_(v_[x_()] != v_[y_()]);
         case 0xA: return ldi_(nnn_());
         case 0xB: return jpo_();
         case 0xC: return rnd_();
         case 0xD: return drw_();
         case 0xE:
             switch (n_()) {
-                case 0xE: return skp_();
-                case 0x1: return sknp_();
+                case 0xE: return skip_(Keyboard::isPressed(v_[x_()]));
+                case 0x1: return skip_(!Keyboard::isPressed(v_[x_()]));
                 default: return undefined(cir_);
             }
         case 0xF:
@@ -170,17 +170,13 @@ inline void Interpreter::call_()
 
 // 3xnn: Skip next instruction if Vx = nn.
 // 5xy0: Skip next instruction if Vx = Vy.
-inline void Interpreter::se_(std::uint8_t a, std::uint8_t b)
-{
-    if (a == b)
-        pc_ += 2;
-}
-
 // 4xnn: Skip next instruction if Vx != nn.
 // 9xy0: Skip next instruction if Vx != Vy.
-inline void Interpreter::sne_(std::uint8_t a, std::uint8_t b)
+// Ex9E: Skip next instruction if key with the value of Vx is pressed.
+// ExA1: Skip next instruction if key with the value of Vx is not pressed.
+inline void Interpreter::skip_(bool cond)
 {
-    if (a != b)
+    if (cond)
         pc_ += 2;
 }
 
@@ -313,20 +309,6 @@ inline void Interpreter::drw_()
         }
     }
     draw_ = true;
-}
-
-// Ex9E: Skip next instruction if key with the value of Vx is pressed.
-inline void Interpreter::skp_()
-{
-    if (Keyboard::isPressed(v_[x_()]))
-        pc_ += 2;
-}
-
-// ExA1: Skip next instruction if key with the value of Vx is not pressed.
-inline void Interpreter::sknp_()
-{
-    if (!Keyboard::isPressed(v_[x_()]))
-        pc_ += 2;
 }
 
 // Fx0A: Wait for a key press, store the value of the key in Vx.
